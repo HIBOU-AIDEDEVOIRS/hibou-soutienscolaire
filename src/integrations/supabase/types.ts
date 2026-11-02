@@ -14,7 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+          sdk_id: string | null
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          parts?: Json
+          role: string
+          sdk_id?: string | null
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+          sdk_id?: string | null
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          answer_length: string
+          correct_mistakes: boolean
+          created_at: string
+          email: string | null
+          first_name: string
+          grade: string
+          id: string
+          interests: string
+          last_name: string
+          nickname: string
+          theme: string
+          tone: string
+          updated_at: string
+          use_emojis: boolean
+          word_map: Json
+        }
+        Insert: {
+          age?: number | null
+          answer_length?: string
+          correct_mistakes?: boolean
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          grade?: string
+          id: string
+          interests?: string
+          last_name?: string
+          nickname?: string
+          theme?: string
+          tone?: string
+          updated_at?: string
+          use_emojis?: boolean
+          word_map?: Json
+        }
+        Update: {
+          age?: number | null
+          answer_length?: string
+          correct_mistakes?: boolean
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          grade?: string
+          id?: string
+          interests?: string
+          last_name?: string
+          nickname?: string
+          theme?: string
+          tone?: string
+          updated_at?: string
+          use_emojis?: boolean
+          word_map?: Json
+        }
+        Relationships: []
+      }
+      threads: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
