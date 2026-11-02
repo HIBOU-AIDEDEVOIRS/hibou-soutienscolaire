@@ -46,7 +46,7 @@ export async function handleChat(request: Request) {
   };
 
   // Save the new user message
-  const last = messages[messages.length - 1];
+  const last = messages[messages.length - 1]!;
   if (last.role === "user") {
     const { error } = await supabase.from("messages").insert({
       thread_id: thread.id,
@@ -66,7 +66,7 @@ export async function handleChat(request: Request) {
     await supabase.from("threads").update(update).eq("id", thread.id);
   }
 
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return json(500, "Clé IA manquante.");
   const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
   const provider = createOpenAI({
@@ -123,7 +123,7 @@ export async function handleTranscribe(request: Request) {
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File) || !file.size || !file.type.startsWith("audio/")) return json(400, "Vocal vide.");
-  const apiKey = process.env.LOVABLE_API_KEY!;
+  const apiKey = process.env["LOVABLE_API_KEY"]!;
   const out = new FormData();
   out.append("model", "openai/gpt-transcribe");
   out.append("file", file, file.name);

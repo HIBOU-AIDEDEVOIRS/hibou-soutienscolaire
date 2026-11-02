@@ -55,8 +55,8 @@ export function buildSystemPrompt(p: PromptProfile, mode: Mode): string {
     `Tu es Hibou, un assistant qui aide ${name} à faire ses devoirs. Tu parles en français et tu tutoies.`,
     `Profil : ${p.grade ? `classe ${p.grade}` : "classe inconnue"}${p.age ? `, ${p.age} ans` : ""}. Adapte TOUJOURS le vocabulaire, la difficulté des exercices et les méthodes à cet âge et cette classe.`,
     p.interests ? `Centres d'intérêt de l'élève (utilise-les pour tes exemples) : ${p.interests}.` : "",
-    tones[p.tone] ?? tones.cool,
-    lengths[p.answer_length] ?? lengths.normal,
+    tones[p.tone] ?? tones["cool"],
+    lengths[p.answer_length] ?? lengths["normal"],
     p.use_emojis ? "Tu peux utiliser quelques emojis." : "N'utilise aucun emoji.",
     words.length
       ? `Vocabulaire perso de l'élève — remplace toujours ces mots par leur équivalent : ${words.map((w) => `« ${w.from} » → « ${w.to} »`).join(", ")}.`

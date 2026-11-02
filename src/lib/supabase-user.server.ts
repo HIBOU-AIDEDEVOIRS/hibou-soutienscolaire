@@ -3,8 +3,8 @@ import type { Database } from "@/integrations/supabase/types";
 
 /** Builds a Supabase client acting as the caller (RLS applies) from the bearer token. */
 export async function getUserClient(request: Request) {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  const url = process.env["SUPABASE_URL"]!;
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
   const auth = request.headers.get("authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token || token.split(".").length !== 3) return null;
