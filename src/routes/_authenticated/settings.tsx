@@ -74,7 +74,10 @@ function SettingsPage() {
       })
       .eq("id", p.id);
     setSaving(false);
-    if (error) return toast.error("Sauvegarde ratée.");
+    if (error) {
+      toast.error("Sauvegarde ratée.");
+      return;
+    }
     applyTheme(p.theme as Theme);
     qc.invalidateQueries({ queryKey: ["profile"] });
     toast.success("C'est enregistré ✅");
