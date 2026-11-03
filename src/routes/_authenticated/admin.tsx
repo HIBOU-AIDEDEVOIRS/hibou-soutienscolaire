@@ -71,7 +71,10 @@ function AdminPage() {
 
   async function update(id: string, bonus: number, reset: boolean) {
     const { error } = await supabase.rpc("admin_set_credits", { _user: id, _bonus: bonus, _reset: reset });
-    if (error) return toast.error("Modification impossible.");
+    if (error) {
+      toast.error("Modification impossible.");
+      return;
+    }
     toast.success("Crédits mis à jour");
     qc.invalidateQueries({ queryKey: ["admin-users"] });
   }
