@@ -5,8 +5,8 @@ export type QuizQuestion = {
   answer: number[];
   explanation?: string;
 };
-export type Quiz = { title?: string; questions: QuizQuestion[] };
-export type Flashcards = { title?: string; cards: { front: string; back: string }[] };
+export type Quiz = { title?: string | undefined; questions: QuizQuestion[] };
+export type Flashcards = { title?: string | undefined; cards: { front: string; back: string }[] };
 
 export type Segment =
   | { kind: "text"; text: string }
