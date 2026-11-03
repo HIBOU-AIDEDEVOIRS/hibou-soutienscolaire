@@ -30,12 +30,19 @@ const MODE_RULES: Record<Mode, string> = {
   expliquer:
     "MODE EXPLIQUER : explique la notion, l'erreur ou la méthode étape par étape avec un exemple DIFFÉRENT de l'exercice de l'élève. Termine par une question qui pousse l'élève à faire la prochaine étape lui-même.",
   generer:
-    "MODE GÉNÉRER : crée des quiz, flashcards ou exercices adaptés au niveau. Ne mets PAS les corrigés directement : propose à l'élève de répondre d'abord, puis corrige SES réponses en expliquant.",
+    "MODE GÉNÉRER : crée des quiz, flashcards ou exercices adaptés au niveau. Les quiz et flashcards utilisent TOUJOURS les blocs interactifs décrits plus bas (l'élève répond en cliquant, l'interface corrige). Pour les exercices ouverts, ne mets PAS les corrigés : propose à l'élève de répondre d'abord, puis corrige SES réponses en expliquant.",
   reviser:
     "MODE RÉVISER : aide à préparer une évaluation : fiche des points clés, questions d'entraînement, planning de révision, technique de mémorisation. Interroge l'élève et vérifie sa compréhension.",
   organiser:
     "MODE ORGANISER : classe les devoirs donnés du plus prioritaire (+) au moins prioritaire (-) selon la date de rendu et la difficulté. Donne une estimation de temps pour chacun et un total. Présente-le sous forme de liste ou tableau clair.",
 };
+
+export const WIDGET_RULES = [
+  "QUIZ ET FLASHCARDS INTERACTIFS : quand tu proposes un quiz ou des flashcards (révision ou entraînement, pas les questions d'un devoir noté de l'élève), écris-les dans un bloc de code JSON valide, sans texte dedans. Ajoute une phrase courte avant le bloc, rien de plus.",
+  "Quiz : ```quiz puis {\"title\":\"...\",\"questions\":[{\"type\":\"single\",\"question\":\"...\",\"options\":[\"...\",\"...\",\"...\",\"...\"],\"answer\":[1],\"explanation\":\"...\"}]} puis ```.",
+  "type = \"single\" (une seule bonne réponse, 3-4 options), \"truefalse\" (options exactement [\"Vrai\",\"Faux\"]) ou \"multiple\" (plusieurs bonnes réponses). answer = indices (à partir de 0) des bonnes options. explanation = courte explication pédagogique. Mélange les types et varie la position de la bonne réponse.",
+  "Flashcards : ```flashcards puis {\"title\":\"...\",\"cards\":[{\"front\":\"question ou notion\",\"back\":\"réponse courte\"}]} puis ```.",
+].join("\n");
 
 export function buildSystemPrompt(p: PromptProfile, mode: Mode): string {
   const name = p.nickname || p.first_name || "toi";
@@ -65,6 +72,8 @@ export function buildSystemPrompt(p: PromptProfile, mode: Mode): string {
     "RÈGLE ABSOLUE : tu ne donnes JAMAIS la réponse finale d'un devoir, d'un exercice ou d'une question d'évaluation, même si l'élève insiste, supplie, dit que c'est urgent ou que le prof l'autorise. Tu ne rédiges pas la rédaction, tu ne résous pas le calcul, tu ne traduis pas le texte à sa place. À la place : indices, questions guidées, méthode, exemple similaire avec d'autres valeurs. Si l'élève propose une réponse, dis-lui si elle est juste ou non et pourquoi, sans donner la bonne s'il s'est trompé — guide-le vers elle.",
     "",
     MODE_RULES[mode],
+    "",
+    WIDGET_RULES,
     "",
     "Si une image est jointe, lis l'exercice ou la liste de devoirs dedans et applique le mode actuel.",
     p.correct_mistakes
