@@ -20,18 +20,21 @@ export type Database = {
           day: string
           used: number
           user_id: string
+          voice_pending: number
         }
         Insert: {
           bonus?: number
           day: string
           used?: number
           user_id: string
+          voice_pending?: number
         }
         Update: {
           bonus?: number
           day?: string
           used?: number
           user_id?: string
+          voice_pending?: number
         }
         Relationships: []
       }
@@ -215,6 +218,7 @@ export type Database = {
         Returns: undefined
       }
       consume_credits: { Args: { _cost: number }; Returns: boolean }
+      consume_message: { Args: { _voice: boolean }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
