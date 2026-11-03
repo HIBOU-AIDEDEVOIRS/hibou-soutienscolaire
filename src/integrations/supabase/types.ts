@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_usage: {
+        Row: {
+          bonus: number
+          day: string
+          used: number
+          user_id: string
+          voice_pending: number
+        }
+        Insert: {
+          bonus?: number
+          day: string
+          used?: number
+          user_id: string
+          voice_pending?: number
+        }
+        Update: {
+          bonus?: number
+          day?: string
+          used?: number
+          user_id?: string
+          voice_pending?: number
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           created_at: string
@@ -51,6 +75,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -133,15 +178,65 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_list_users: {
+        Args: never
+        Returns: {
+          bonus: number
+          created_at: string
+          email: string
+          grade: string
+          id: string
+          name: string
+          used: number
+        }[]
+      }
+      admin_set_credits: {
+        Args: { _bonus: number; _reset: boolean; _user: string }
+        Returns: undefined
+      }
+      consume_credits: { Args: { _cost: number }; Returns: boolean }
+      consume_message: { Args: { _voice: boolean }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      my_credits: {
+        Args: never
+        Returns: {
+          total: number
+          used: number
+        }[]
+      }
+      paris_today: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -268,6 +363,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

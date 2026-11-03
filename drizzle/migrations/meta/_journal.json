@@ -8,6 +8,20 @@
       "when": 1793614554898,
       "tag": "0000_init_homework_app",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793697052803,
+      "tag": "0001_credits_admin_pageviews",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793697086004,
+      "tag": "0002_voice_credit_tokens",
+      "breakpoints": true
     }
   ]
 }

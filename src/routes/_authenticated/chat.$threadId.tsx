@@ -31,6 +31,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { MODES, type Mode } from "@/lib/prompt";
 import { messagesQuery } from "@/lib/threads";
 import { recordWav } from "@/lib/record-wav";
+import { creditsQuery, formatCredits } from "@/lib/credits";
+import { splitWidgets } from "@/lib/widgets";
+import { FlashcardDeck, QuizCard } from "@/components/study-widgets";
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ThreadPage,
@@ -60,6 +63,8 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
   const [mode, setMode] = useState<Mode>("expliquer");
   const modeRef = useRef(mode);
   modeRef.current = mode;
+  const voiceRef = useRef(false);
+  const { data: credits } = useQuery(creditsQuery);
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
@@ -74,7 +79,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
       new DefaultChatTransport({
         api: "/api/chat",
         headers: authHeader,
-        body: () => ({ threadId, mode: modeRef.current }),
+        body: () => ({ threadId, mode: modeRef.current, voice: voiceRef.current }),
       }),
   );
 
@@ -90,11 +95,12 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
         /* plain text */
       }
       if (msg.includes("429")) msg = "Trop de messages d'un coup, attends un peu.";
-      if (msg.includes("402")) msg = "Les crédits IA sont épuisés pour le moment.";
       toast.error(msg || "Oups, ça n'a pas marché.");
+      qc.invalidateQueries({ queryKey: ["credits"] });
     },
     onFinish: () => {
       qc.invalidateQueries({ queryKey: ["threads"] });
+      qc.invalidateQueries({ queryKey: ["credits"] });
       qc.setQueryData(messagesQuery(threadId).queryKey, undefined);
     },
   });
@@ -104,7 +110,14 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
 
   function handleSubmit(msg: PromptInputMessage) {
     if (busy || (!msg.text.trim() && !msg.files.length)) return;
-    sendMessage({ text: msg.text, files: msg.files });
+    const left = credits ? credits.total - credits.used : 1;
+    if (!voiceRef.current && left < 1) {
+      toast.error("Tu as utilisé tous tes crédits pour aujourd'hui. Reviens demain 🦉");
+      return;
+    }
+    sendMessage({ text: msg.text, files: msg.files }).finally(() => {
+      voiceRef.current = false;
+    });
   }
 
   return (
@@ -132,7 +145,19 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
                   {m.parts.map((part, i) => {
                     if (part.type === "text")
                       return m.role === "assistant" ? (
-                        <MessageResponse key={i}>{part.text}</MessageResponse>
+                        <div key={i} className="w-full">
+                          {splitWidgets(part.text).map((seg, j) =>
+                            seg.kind === "quiz" ? (
+                              <QuizCard key={j} quiz={seg.data} />
+                            ) : seg.kind === "flashcards" ? (
+                              <FlashcardDeck key={j} deck={seg.data} />
+                            ) : seg.kind === "pending" ? (
+                              <Shimmer key={j}>{seg.widget === "quiz" ? "Hibou prépare ton quiz…" : "Hibou prépare tes flashcards…"}</Shimmer>
+                            ) : (
+                              <MessageResponse key={j}>{seg.text}</MessageResponse>
+                            ),
+                          )}
+                        </div>
                       ) : (
                         <p key={i} className="whitespace-pre-wrap">{part.text}</p>
                       );
@@ -169,7 +194,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
             <PromptInputFooter>
               <PromptInputTools>
                 <AddImageButton />
-                <VoiceButton disabled={busy} />
+                <VoiceButton disabled={busy} onVoice={() => { voiceRef.current = true; qc.invalidateQueries({ queryKey: ["credits"] }); }} />
                 <PromptInputSelect value={mode} onValueChange={(v) => setMode(v as Mode)}>
                   <PromptInputSelectTrigger className="h-8 w-auto gap-1 rounded-full px-3 text-sm font-semibold">
                     <PromptInputSelectValue />
@@ -190,6 +215,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
             </PromptInputFooter>
           </PromptInput>
           <p className="mt-2 text-center text-xs text-muted-foreground">
+            {credits && <span className="font-semibold text-foreground">⚡ {formatCredits(credits.total - credits.used)} / {formatCredits(credits.total)} crédits aujourd'hui · </span>}
             Hibou t'aide à comprendre, mais il ne fera pas tes devoirs à ta place 🦉
           </p>
         </div>
@@ -253,7 +279,7 @@ function AttachmentPreview() {
   );
 }
 
-function VoiceButton({ disabled }: { disabled: boolean }) {
+function VoiceButton({ disabled, onVoice }: { disabled: boolean; onVoice: () => void }) {
   const { textInput } = usePromptInputController();
   const rec = useRef<{ stop: () => Promise<File> } | null>(null);
   const [state, setState] = useState<"idle" | "rec" | "busy">("idle");
@@ -280,7 +306,11 @@ function VoiceButton({ disabled }: { disabled: boolean }) {
       const form = new FormData();
       form.append("file", file);
       const res = await fetch("/api/transcribe", { method: "POST", headers: await authHeader(), body: form });
-      if (!res.ok || !res.body) throw new Error("Transcription impossible");
+      if (!res.ok || !res.body) {
+        const err = (await res.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(err?.error ?? "Transcription impossible");
+      }
+      onVoice();
       const base = valueRef.current ? valueRef.current.trimEnd() + " " : "";
       let text = "";
       const reader = res.body

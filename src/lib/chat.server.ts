@@ -23,6 +23,7 @@ export async function handleChat(request: Request) {
     messages?: UIMessage[];
     threadId?: string;
     mode?: string;
+    voice?: boolean;
   } | null;
   const messages = body?.messages;
   if (!Array.isArray(messages) || !messages.length || !body?.threadId) return json(400, "Requête invalide.");
@@ -48,6 +49,8 @@ export async function handleChat(request: Request) {
   // Save the new user message
   const last = messages[messages.length - 1]!;
   if (last.role === "user") {
+    const { data: ok } = await supabase.rpc("consume_message", { _voice: body.voice === true });
+    if (!ok) return json(402, "Tu as utilisé tous tes crédits pour aujourd'hui. Reviens demain 🦉");
     const { error } = await supabase.from("messages").insert({
       thread_id: thread.id,
       user_id: userId,
@@ -123,6 +126,8 @@ export async function handleTranscribe(request: Request) {
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File) || !file.size || !file.type.startsWith("audio/")) return json(400, "Vocal vide.");
+  const { data: ok } = await user.supabase.rpc("consume_credits", { _cost: 0.25 });
+  if (!ok) return json(402, "Plus assez de crédits pour un vocal aujourd'hui.");
   const apiKey = process.env["LOVABLE_API_KEY"]!;
   const out = new FormData();
   out.append("model", "openai/gpt-transcribe");
