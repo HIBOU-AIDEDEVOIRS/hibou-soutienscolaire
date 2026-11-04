@@ -131,6 +131,18 @@ function RootComponent() {
     return () => data.subscription.unsubscribe();
   }, [router, queryClient]);
 
+  useEffect(() => {
+    let last = "";
+    const log = async (path: string) => {
+      if (path === last) return;
+      last = path;
+      const { data } = await supabase.auth.getSession();
+      await supabase.from("page_views").insert({ path: path.slice(0, 200), user_id: data.session?.user.id ?? null });
+    };
+    log(router.state.location.pathname);
+    return router.subscribe("onResolved", (e) => log(e.toLocation.pathname));
+  }, [router]);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
