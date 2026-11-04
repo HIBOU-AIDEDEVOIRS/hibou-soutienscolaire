@@ -103,7 +103,7 @@ export async function handleChat(request: Request) {
         const { error } = await supabase.from("messages").insert({
           thread_id: thread.id,
           user_id: userId,
-          sdk_id: responseMessage.id,
+          sdk_id: responseMessage.id || null,
           role: "assistant",
           parts: responseMessage.parts.filter((x) => x.type === "text") as unknown as Json,
         });

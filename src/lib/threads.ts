@@ -26,7 +26,9 @@ export const messagesQuery = (threadId: string) =>
         .order("created_at");
       if (error) throw error;
       return data.map((m) => ({
-        id: m.sdk_id ?? m.id,
+        // sdk_id peut être une chaîne vide (ancien enregistrement) : sans ça, deux messages
+        // partagent la même clé React et l'un des deux risque de s'afficher en double.
+        id: m.sdk_id || m.id,
         role: m.role as UIMessage["role"],
         parts: m.parts as unknown as UIMessage["parts"],
       }));

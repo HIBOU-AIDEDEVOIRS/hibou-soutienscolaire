@@ -31,7 +31,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { MODES, type Mode } from "@/lib/prompt";
 import { messagesQuery } from "@/lib/threads";
 import { recordWav } from "@/lib/record-wav";
-import { creditsQuery, formatCredits } from "@/lib/credits";
+import { creditsQuery } from "@/lib/credits";
+import { CreditsGauge } from "@/components/credits-gauge";
 import { splitWidgets } from "@/lib/widgets";
 import { FlashcardDeck, QuizCard } from "@/components/study-widgets";
 
@@ -214,10 +215,12 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
               <PromptInputSubmit status={status} onStop={stop} className="rounded-full" />
             </PromptInputFooter>
           </PromptInput>
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            {credits && <span className="font-semibold text-foreground">⚡ {formatCredits(credits.total - credits.used)} / {formatCredits(credits.total)} crédits aujourd'hui · </span>}
-            Hibou t'aide à comprendre, mais il ne fera pas tes devoirs à ta place 🦉
-          </p>
+          <div className="mt-2 space-y-1.5">
+            <CreditsGauge compact />
+            <p className="text-center text-xs text-muted-foreground">
+              Hibou t'aide à comprendre, mais il ne fera pas tes devoirs à ta place 🦉
+            </p>
+          </div>
         </div>
       </div>
     </PromptInputProvider>
