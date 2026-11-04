@@ -6,6 +6,7 @@ import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { createThread, threadsQuery } from "@/lib/threads";
+import { CreditsGauge } from "@/components/credits-gauge";
 import { applyTheme, currentTheme, type Theme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
@@ -82,6 +83,9 @@ function ChatLayout() {
           <Button onClick={newThread} className="w-full justify-start gap-2 rounded-xl font-semibold">
             <PenSquare className="h-4 w-4" /> Nouvelle discussion
           </Button>
+        </div>
+        <div className="px-3 pt-4">
+          <CreditsGauge />
         </div>
         <nav className="mt-4 flex-1 space-y-0.5 overflow-y-auto px-3">
           {threads.map((t) => (

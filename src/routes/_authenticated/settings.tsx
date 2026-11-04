@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { CreditsGauge } from "@/components/credits-gauge";
+import { DAILY_CREDITS, TEXT_COST, VOICE_COST, formatCredits } from "@/lib/credits";
 import { applyTheme, type Theme } from "@/lib/theme";
 import type { WordPair } from "@/lib/prompt";
 
@@ -90,6 +92,13 @@ function SettingsPage() {
           <ArrowLeft className="h-4 w-4" /> Retour aux discussions
         </Link>
         <h1 className="font-display text-3xl font-extrabold">Paramètres</h1>
+
+        <Section title="Mes crédits du jour">
+          <CreditsGauge />
+          <p className="text-xs text-muted-foreground">
+            Chaque jour tu as {DAILY_CREDITS} crédits : un message écrit coûte {TEXT_COST}, un message vocal {formatCredits(VOICE_COST)}. Le compteur repart à zéro à minuit (heure de Paris).
+          </p>
+        </Section>
 
         <Section title="Mon profil">
           <div className="grid grid-cols-2 gap-3">
