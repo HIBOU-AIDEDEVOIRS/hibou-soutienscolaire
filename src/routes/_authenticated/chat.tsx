@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { LogOut, Menu, MessageSquare, Moon, PenSquare, Settings, Sun, Trash2, X } from "lucide-react";
+import { LogOut, Menu, MessageSquare, Moon, PenSquare, Settings, ShieldCheck, Sun, Trash2, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +23,15 @@ export const Route = createFileRoute("/_authenticated/chat")({
 
 function ChatLayout() {
   const { data: threads = [] } = useQuery(threadsQuery);
+  const isAdmin = useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) return false;
+      const { data: ok } = await supabase.rpc("has_role", { _user_id: data.user.id, _role: "admin" });
+      return !!ok;
+    },
+  });
   const params = useParams({ strict: false }) as { threadId?: string };
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -111,6 +120,11 @@ function ChatLayout() {
           <Button asChild variant="ghost" className="w-full justify-start gap-2">
             <Link to="/settings"><Settings className="h-4 w-4" /> Paramètres</Link>
           </Button>
+          {isAdmin.data && (
+            <Button asChild variant="ghost" className="w-full justify-start gap-2">
+              <Link to="/admin"><ShieldCheck className="h-4 w-4" /> Administration</Link>
+            </Button>
+          )}
           <Button
             variant="ghost"
             className="w-full justify-start gap-2"
