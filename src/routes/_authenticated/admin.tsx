@@ -168,7 +168,7 @@ function AdminPage() {
               })}
             </TableBody>
           </Table>
-          <p className="mt-3 text-xs text-muted-foreground">Chaque élève a 10 crédits par jour (message écrit : 1, vocal : 0,25). Les boutons −10 / −1 / +1 enlèvent ou ajoutent des crédits pour la journée en cours (au minimum 0 crédit) ; ↺ remet le compteur à zéro.</p>
+          <p className="mt-3 text-xs text-muted-foreground">Chaque élève a 10 crédits par jour (message écrit : 1, vocal : 0,25). Les boutons +10 / +5 / +1 ajoutent des crédits et −1 / −5 / −10 en enlèvent pour la journée en cours (au minimum 0 crédit) ; ↺ remet le compteur à zéro.</p>
         </section>
       </div>
     </div>
