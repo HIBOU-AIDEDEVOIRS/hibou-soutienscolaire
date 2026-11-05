@@ -219,6 +219,15 @@ export type Database = {
       }
       consume_credits: { Args: { _cost: number }; Returns: boolean }
       consume_message: { Args: { _voice: boolean }; Returns: boolean }
+      consume_message2: {
+        Args: {
+          _has_text: boolean
+          _large_images: number
+          _small_images: number
+          _voice: boolean
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
