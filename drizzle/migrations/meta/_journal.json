@@ -22,6 +22,13 @@
       "when": 1793697086004,
       "tag": "0002_voice_credit_tokens",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793869997011,
+      "tag": "0003_image_voice_costs",
+      "breakpoints": true
     }
   ]
 }

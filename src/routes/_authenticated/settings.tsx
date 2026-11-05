@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { CreditsGauge } from "@/components/credits-gauge";
-import { DAILY_CREDITS, TEXT_COST, VOICE_COST, formatCredits } from "@/lib/credits";
+import { DAILY_CREDITS, TEXT_COST, VOICE_COST, IMAGE_SMALL_COST, IMAGE_LARGE_COST, formatCredits } from "@/lib/credits";
 import { applyTheme, type Theme } from "@/lib/theme";
 import type { WordPair } from "@/lib/prompt";
 import { friendlyPasswordError, passwordIssue } from "@/lib/password";
@@ -119,7 +119,7 @@ function SettingsPage() {
         <Section title="Mes crédits du jour">
           <CreditsGauge />
           <p className="text-xs text-muted-foreground">
-            Chaque jour tu as {DAILY_CREDITS} crédits : un message écrit coûte {TEXT_COST}, un message vocal {formatCredits(VOICE_COST)}. Le compteur repart à zéro à minuit (heure de Paris).
+            Chaque jour tu as {DAILY_CREDITS} crédits : un message écrit coûte {TEXT_COST}, un message vocal {formatCredits(VOICE_COST)}, une photo {formatCredits(IMAGE_SMALL_COST)} (ou {formatCredits(IMAGE_LARGE_COST)} si elle fait plus de 1 Mo). Le compteur repart à zéro à minuit (heure de Paris).
           </p>
         </Section>
 

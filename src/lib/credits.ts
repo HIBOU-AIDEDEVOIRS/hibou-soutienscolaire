@@ -2,8 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const DAILY_CREDITS = 10;
-export const TEXT_COST = 1;
-export const VOICE_COST = 0.25;
+export * from "./credit-costs";
 
 export const creditsQuery = queryOptions({
   queryKey: ["credits"],

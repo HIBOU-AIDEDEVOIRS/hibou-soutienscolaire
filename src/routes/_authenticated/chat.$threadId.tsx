@@ -31,7 +31,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MODES, type Mode } from "@/lib/prompt";
 import { messagesQuery } from "@/lib/threads";
 import { recordWav } from "@/lib/record-wav";
-import { creditsQuery } from "@/lib/credits";
+import { creditsQuery, dataUrlBytes, formatCredits, imageCost, TEXT_COST } from "@/lib/credits";
 import { CreditsGauge } from "@/components/credits-gauge";
 import { splitWidgets } from "@/lib/widgets";
 import { FlashcardDeck, QuizCard } from "@/components/study-widgets";
@@ -112,7 +112,9 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
   function handleSubmit(msg: PromptInputMessage) {
     if (busy || (!msg.text.trim() && !msg.files.length)) return;
     const left = credits ? credits.total - credits.used : 1;
-    if (!voiceRef.current && left < 1) {
+    const imgCost = msg.files.reduce((a, f) => a + imageCost(dataUrlBytes(f.url ?? "")), 0);
+    const cost = (voiceRef.current || !msg.text.trim() ? 0 : TEXT_COST) + imgCost || TEXT_COST;
+    if (left < cost) {
       toast.error("Tu as utilisé tous tes crédits pour aujourd'hui. Reviens demain 🦉");
       return;
     }
@@ -268,6 +270,9 @@ function AttachmentPreview() {
       {att.files.map((f) => (
         <div key={f.id} className="relative">
           <img src={f.url} alt={f.filename ?? ""} className="h-16 w-16 rounded-lg object-cover" />
+          <span className="absolute bottom-0.5 left-0.5 rounded bg-background/85 px-1 text-[10px] font-semibold">
+            ⚡ {formatCredits(imageCost((f as { size?: number }).size ?? 0))}
+          </span>
           <button
             type="button"
             onClick={() => att.remove(f.id)}
