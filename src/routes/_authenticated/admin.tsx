@@ -153,10 +153,13 @@ function AdminPage() {
                       {formatCredits(left)} / {formatCredits(DAILY_CREDITS + bonus)}
                     </TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-1.5">
-                        <Button size="sm" variant="outline" className="text-destructive" aria-label="Enlever 10 crédits" onClick={() => update(u.id, bonus - 10, false)}>−10</Button>
-                        <Button size="sm" variant="outline" className="text-destructive" aria-label="Enlever 1 crédit" onClick={() => update(u.id, bonus - 1, false)}>−1</Button>
+                      <div className="flex flex-wrap justify-end gap-1.5">
+                        <Button size="sm" variant="outline" className="text-success" aria-label="Ajouter 10 crédits" onClick={() => update(u.id, bonus + 10, false)}>+10</Button>
+                        <Button size="sm" variant="outline" className="text-success" aria-label="Ajouter 5 crédits" onClick={() => update(u.id, bonus + 5, false)}>+5</Button>
                         <Button size="sm" variant="outline" className="text-success" aria-label="Ajouter 1 crédit" onClick={() => update(u.id, bonus + 1, false)}>+1</Button>
+                        <Button size="sm" variant="outline" className="text-destructive" aria-label="Enlever 1 crédit" onClick={() => update(u.id, bonus - 1, false)}>−1</Button>
+                        <Button size="sm" variant="outline" className="text-destructive" aria-label="Enlever 5 crédits" onClick={() => update(u.id, bonus - 5, false)}>−5</Button>
+                        <Button size="sm" variant="outline" className="text-destructive" aria-label="Enlever 10 crédits" onClick={() => update(u.id, bonus - 10, false)}>−10</Button>
                         <Button size="sm" variant="ghost" onClick={() => update(u.id, 0, true)} aria-label="Réinitialiser"><RotateCcw className="h-4 w-4" /></Button>
                       </div>
                     </TableCell>
