@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { isRecoveryUrl, resetRedirectUrl } from "@/lib/auth-redirect";
+import { friendlyPasswordError } from "@/lib/password";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
@@ -28,16 +29,6 @@ export const Route = createFileRoute("/reset-password")({
   }),
   component: ResetPasswordPage,
 });
-
-function friendly(err: unknown): string {
-  const msg = err instanceof Error ? err.message : String(err);
-  if (/different from the old password/i.test(msg)) return "Choisis un mot de passe différent de l'ancien.";
-  if (/at least 6 characters|too short|password/i.test(msg) && /character/i.test(msg))
-    return "Mot de passe trop court : 6 caractères minimum.";
-  if (/Auth session missing|invalid grant|expired|Invalid refresh token/i.test(msg))
-    return "Ton lien a expiré. Demande un nouveau lien de réinitialisation.";
-  return msg;
-}
 
 function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -84,7 +75,7 @@ function ResetPasswordPage() {
       toast.success("Mot de passe changé ✅");
       await navigate({ to: "/chat" });
     } catch (err) {
-      toast.error(friendly(err));
+      toast.error(friendlyPasswordError(err, true));
     } finally {
       setLoading(false);
     }
@@ -100,7 +91,7 @@ function ResetPasswordPage() {
       if (error) throw error;
       setSent(true);
     } catch (err) {
-      toast.error(friendly(err));
+      toast.error(friendlyPasswordError(err, true));
     } finally {
       setLoading(false);
     }

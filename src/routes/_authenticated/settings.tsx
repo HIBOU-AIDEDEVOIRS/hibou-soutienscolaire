@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,7 @@ import { CreditsGauge } from "@/components/credits-gauge";
 import { DAILY_CREDITS, TEXT_COST, VOICE_COST, formatCredits } from "@/lib/credits";
 import { applyTheme, type Theme } from "@/lib/theme";
 import type { WordPair } from "@/lib/prompt";
+import { friendlyPasswordError, passwordIssue } from "@/lib/password";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -44,6 +45,10 @@ function SettingsPage() {
   const [p, setP] = useState<Profile | null>(null);
   const [words, setWords] = useState<WordPair[]>([]);
   const [saving, setSaving] = useState(false);
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [savingPw, setSavingPw] = useState(false);
   useEffect(() => {
     if (data) {
       setP(data);
@@ -83,6 +88,24 @@ function SettingsPage() {
     applyTheme(p.theme as Theme);
     qc.invalidateQueries({ queryKey: ["profile"] });
     toast.success("C'est enregistré ✅");
+  }
+
+  async function savePassword() {
+    const issue = passwordIssue(pw, pw2);
+    if (issue) {
+      toast.error(issue);
+      return;
+    }
+    setSavingPw(true);
+    const { error } = await supabase.auth.updateUser({ password: pw });
+    setSavingPw(false);
+    if (error) {
+      toast.error(friendlyPasswordError(error));
+      return;
+    }
+    setPw("");
+    setPw2("");
+    toast.success("Mot de passe changé ✅");
   }
 
   return (
@@ -152,6 +175,47 @@ function SettingsPage() {
         <Button onClick={save} disabled={saving} size="lg" className="mt-8 w-full rounded-full font-semibold">
           {saving ? "…" : "Enregistrer"}
         </Button>
+
+        <Section title="Sécurité & mot de passe">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <F label="Nouveau mot de passe">
+              <div className="relative">
+                <Input
+                  type={showPw ? "text" : "password"}
+                  autoComplete="new-password"
+                  minLength={6}
+                  value={pw}
+                  onChange={(e) => setPw(e.target.value)}
+                  className="pr-11"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw((s) => !s)}
+                  aria-label={showPw ? "Cacher le mot de passe" : "Montrer le mot de passe"}
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                >
+                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </F>
+            <F label="Répète le mot de passe">
+              <Input
+                type={showPw ? "text" : "password"}
+                autoComplete="new-password"
+                minLength={6}
+                value={pw2}
+                onChange={(e) => setPw2(e.target.value)}
+              />
+            </F>
+          </div>
+          <Button onClick={savePassword} disabled={savingPw} variant="secondary" className="rounded-full font-semibold">
+            {savingPw ? "…" : "Changer le mot de passe"}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            6 caractères minimum, et tu n'as pas besoin de l'ancien. Si tu ne le retrouves plus,
+            utilise « Mot de passe oublié ? » sur la page de connexion.
+          </p>
+        </Section>
       </div>
     </main>
   );
