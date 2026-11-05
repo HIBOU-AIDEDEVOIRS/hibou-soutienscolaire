@@ -271,7 +271,7 @@ function AttachmentPreview() {
         <div key={f.id} className="relative">
           <img src={f.url} alt={f.filename ?? ""} className="h-16 w-16 rounded-lg object-cover" />
           <span className="absolute bottom-0.5 left-0.5 rounded bg-background/85 px-1 text-[10px] font-semibold">
-            ⚡ {formatCredits(imageCost(dataUrlBytes(f.url ?? "")))}
+            ⚡ {formatCredits(imageCost((f as { size?: number }).size ?? 0))}
           </span>
           <button
             type="button"

@@ -275,6 +275,7 @@ export const PromptInputProvider = ({
         mediaType: file.type,
         type: "file" as const,
         url: URL.createObjectURL(file),
+        size: file.size,
       })),
     ]);
   }, []);
@@ -618,6 +619,7 @@ export const PromptInput = ({
             mediaType: file.type,
             type: "file",
             url: URL.createObjectURL(file),
+        size: file.size,
           });
         }
         return [...prev, ...next];
