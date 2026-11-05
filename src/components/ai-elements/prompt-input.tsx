@@ -619,7 +619,7 @@ export const PromptInput = ({
             mediaType: file.type,
             type: "file",
             url: URL.createObjectURL(file),
-        size: file.size,
+        ...({ size: file.size } as object),
           });
         }
         return [...prev, ...next];
