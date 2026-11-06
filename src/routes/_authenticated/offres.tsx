@@ -31,7 +31,7 @@ function OffresPage() {
     setSending(true);
     const { error } = await supabase.rpc("request_pro");
     setSending(false);
-    if (error) return toast.error("Impossible d'envoyer ta demande.");
+    if (error) { toast.error("Impossible d'envoyer ta demande."); return; }
     toast.success("Demande envoyée ✨");
     qc.invalidateQueries({ queryKey: ["pro"] });
   }

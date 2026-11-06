@@ -82,7 +82,7 @@ function AdminPage() {
 
   async function setPro(id: string, active: boolean) {
     const { error } = await supabase.rpc("admin_set_pro", { _user: id, _active: active });
-    if (error) return toast.error("Modification impossible.");
+    if (error) { toast.error("Modification impossible."); return; }
     toast.success(active ? "Pro activé ✨" : "Pro désactivé");
     qc.invalidateQueries({ queryKey: ["admin-users"] });
   }
