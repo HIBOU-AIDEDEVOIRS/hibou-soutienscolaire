@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { proQuery } from "@/lib/pro";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
@@ -66,6 +67,8 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
   modeRef.current = mode;
   const voiceRef = useRef(false);
   const { data: credits } = useQuery(creditsQuery);
+  const { data: proStatus } = useQuery(proQuery);
+  const isPro = proStatus === "active";
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
@@ -198,7 +201,14 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
               <PromptInputTools>
                 <AddImageButton />
                 <VoiceButton disabled={busy} onVoice={() => { voiceRef.current = true; qc.invalidateQueries({ queryKey: ["credits"] }); }} />
-                <PromptInputSelect value={mode} onValueChange={(v) => setMode(v as Mode)}>
+                <PromptInputSelect value={mode} onValueChange={(v) => {
+                  const m = MODES.find((x) => x.value === v);
+                  if (m?.pro && !isPro) {
+                    toast("Le mode Corriger est réservé à Pro ✨", { action: { label: "Voir les offres", onClick: () => { window.location.href = "/offres"; } } });
+                    return;
+                  }
+                  setMode(v as Mode);
+                }}>
                   <PromptInputSelectTrigger className="h-8 w-auto gap-1 rounded-full px-3 text-sm font-semibold">
                     <PromptInputSelectValue />
                   </PromptInputSelectTrigger>
@@ -206,7 +216,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
                     {MODES.map((m) => (
                       <PromptInputSelectItem key={m.value} value={m.value}>
                         <div className="flex flex-col">
-                          <span className="font-semibold">{m.label}</span>
+                          <span className="font-semibold">{m.label}{m.pro && <span className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">PRO</span>}</span>
                           <span className="text-xs text-muted-foreground">{m.hint}</span>
                         </div>
                       </PromptInputSelectItem>

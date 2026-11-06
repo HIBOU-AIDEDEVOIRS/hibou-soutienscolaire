@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { LogOut, Menu, MessageSquare, Moon, PenSquare, Settings, ShieldCheck, Sun, Trash2, X } from "lucide-react";
+import { LogOut, Sparkles, Menu, MessageSquare, Moon, PenSquare, Settings, ShieldCheck, Sun, Trash2, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ import { createThread, threadsQuery } from "@/lib/threads";
 import { CreditsGauge } from "@/components/credits-gauge";
 import { applyTheme, currentTheme, type Theme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
+import { proQuery } from "@/lib/pro";
 
 export const Route = createFileRoute("/_authenticated/chat")({
   head: () => ({
@@ -33,6 +34,7 @@ function ChatLayout() {
       return !!ok;
     },
   });
+  const { data: pro } = useQuery(proQuery);
   const params = useParams({ strict: false }) as { threadId?: string };
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -117,6 +119,11 @@ function ChatLayout() {
           ))}
         </nav>
         <div className="space-y-1 border-t p-3">
+          {pro !== "active" && (
+            <Button asChild className="mb-1 w-full justify-start gap-2 rounded-xl font-semibold">
+              <Link to="/offres"><Sparkles className="h-4 w-4" /> Améliorer</Link>
+            </Button>
+          )}
           <Button variant="ghost" className="w-full justify-start gap-2" onClick={toggleTheme}>
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             {theme === "dark" ? "Mode clair" : "Mode sombre"}

@@ -119,7 +119,7 @@ function SettingsPage() {
         <Section title="Mes crédits du jour">
           <CreditsGauge />
           <p className="text-xs text-muted-foreground">
-            Chaque jour tu as {DAILY_CREDITS} crédits : un message écrit coûte {TEXT_COST}, un message vocal {formatCredits(VOICE_COST)}, une photo {formatCredits(IMAGE_SMALL_COST)} (ou {formatCredits(IMAGE_LARGE_COST)} si elle fait plus de 1 Mo). Le compteur repart à zéro à minuit (heure de Paris).
+            Chaque jour tu as {DAILY_CREDITS} crédits (30 avec Pro) : un message écrit coûte {TEXT_COST}, un message vocal {formatCredits(VOICE_COST)}, une photo {formatCredits(IMAGE_SMALL_COST)} (ou {formatCredits(IMAGE_LARGE_COST)} si elle fait plus de 1 Mo). Le compteur repart à zéro à minuit (heure de Paris).
           </p>
         </Section>
 
