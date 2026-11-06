@@ -97,6 +97,27 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_subscriptions: {
+        Row: {
+          activated_at: string | null
+          requested_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          requested_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          requested_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
@@ -213,8 +234,25 @@ export type Database = {
           used: number
         }[]
       }
+      admin_list_users2: {
+        Args: never
+        Returns: {
+          bonus: number
+          created_at: string
+          email: string
+          grade: string
+          id: string
+          name: string
+          pro: string
+          used: number
+        }[]
+      }
       admin_set_credits: {
         Args: { _bonus: number; _reset: boolean; _user: string }
+        Returns: undefined
+      }
+      admin_set_pro: {
+        Args: { _active: boolean; _user: string }
         Returns: undefined
       }
       consume_credits: { Args: { _cost: number }; Returns: boolean }
@@ -228,6 +266,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      daily_base: { Args: { _user: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -235,6 +274,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_pro: { Args: { _user: string }; Returns: boolean }
       my_credits: {
         Args: never
         Returns: {
@@ -243,6 +283,7 @@ export type Database = {
         }[]
       }
       paris_today: { Args: never; Returns: string }
+      request_pro: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
