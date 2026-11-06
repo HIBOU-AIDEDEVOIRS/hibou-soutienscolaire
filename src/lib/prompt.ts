@@ -1,12 +1,16 @@
 export type Mode = "expliquer" | "generer" | "reviser" | "organiser" | "corriger";
 
-export const MODES: { value: Mode; label: string; hint: string }[] = [
+export const MODES: { value: Mode; label: string; hint: string; pro?: boolean }[] = [
   { value: "expliquer", label: "Expliquer", hint: "Comprendre un devoir, une erreur, une méthode" },
-  { value: "corriger", label: "Corriger", hint: "Vérifier tes réponses et comprendre tes erreurs" },
+  { value: "corriger", label: "Corriger", hint: "Vérifier tes réponses et comprendre tes erreurs", pro: true },
   { value: "generer", label: "Générer", hint: "Quiz, flashcards, exercices" },
   { value: "reviser", label: "Réviser", hint: "Préparer une éval ou un contrôle" },
   { value: "organiser", label: "Organiser", hint: "Classer tes devoirs et estimer le temps" },
 ];
+
+export function isProMode(m: Mode) {
+  return MODES.some((x) => x.value === m && x.pro);
+}
 
 export function isMode(v: unknown): v is Mode {
   return typeof v === "string" && MODES.some((m) => m.value === v);

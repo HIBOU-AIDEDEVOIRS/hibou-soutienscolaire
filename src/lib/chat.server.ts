@@ -2,7 +2,7 @@ import { dataUrlBytes, LARGE_IMAGE_BYTES, VOICE_COST } from "@/lib/credit-costs"
 import { createOpenAI } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { Json } from "@/integrations/supabase/types";
-import { buildSystemPrompt, isMode, type PromptProfile, type WordPair } from "./prompt";
+import { buildSystemPrompt, isMode, isProMode, type PromptProfile, type WordPair } from "./prompt";
 import { getUserClient } from "./supabase-user.server";
 import {
   createLovableAiGatewayRunIdFetch,
@@ -29,6 +29,11 @@ export async function handleChat(request: Request) {
   const messages = body?.messages;
   if (!Array.isArray(messages) || !messages.length || !body?.threadId) return json(400, "Requête invalide.");
   const mode = isMode(body.mode) ? body.mode : "expliquer";
+
+  if (isProMode(mode)) {
+    const { data: pro } = await supabase.rpc("is_pro", { _user: userId });
+    if (!pro) return json(403, "Le mode Corriger est réservé aux membres Pro. Passe à Pro sur la page Offres ✨");
+  }
 
   const { data: thread } = await supabase.from("threads").select("id,title").eq("id", body.threadId).maybeSingle();
   if (!thread) return json(404, "Discussion introuvable.");
