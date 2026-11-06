@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { DAILY_CREDITS, formatCredits } from "@/lib/credits";
+import { PRO_DAILY_CREDITS } from "@/lib/pro";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async ({ context }) => {
@@ -32,7 +33,7 @@ function AdminPage() {
   const users = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_list_users");
+      const { data, error } = await supabase.rpc("admin_list_users2");
       if (error) throw error;
       return data;
     },
@@ -79,6 +80,14 @@ function AdminPage() {
     qc.invalidateQueries({ queryKey: ["admin-users"] });
   }
 
+  async function setPro(id: string, active: boolean) {
+    const { error } = await supabase.rpc("admin_set_pro", { _user: id, _active: active });
+    if (error) return toast.error("Modification impossible.");
+    toast.success(active ? "Pro activé ✨" : "Pro désactivé");
+    qc.invalidateQueries({ queryKey: ["admin-users"] });
+  }
+
+  const pending = (users.data ?? []).filter((u) => u.pro === "pending");
   const list = (users.data ?? []).filter((u) =>
     `${u.email ?? ""} ${u.name}`.toLowerCase().includes(search.toLowerCase()),
   );
@@ -123,6 +132,25 @@ function AdminPage() {
         </div>
 
         <section className="mt-6 rounded-2xl border bg-card p-5">
+          <h2 className="mb-4 font-display font-bold">Demandes Pro en attente ({pending.length})</h2>
+          {!pending.length && <p className="text-sm text-muted-foreground">Aucune demande pour le moment.</p>}
+          <ul className="space-y-2">
+            {pending.map((u) => (
+              <li key={u.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border p-3">
+                <div>
+                  <div className="font-medium">{u.name || "—"}</div>
+                  <div className="text-xs text-muted-foreground">{u.email}</div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={() => setPro(u.id, true)}>Accepter</Button>
+                  <Button size="sm" variant="outline" onClick={() => setPro(u.id, false)}>Refuser</Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="mt-6 rounded-2xl border bg-card p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display font-bold">Crédits des utilisateurs (aujourd'hui)</h2>
             <Input placeholder="Rechercher un nom ou un email…" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
@@ -132,6 +160,7 @@ function AdminPage() {
               <TableRow>
                 <TableHead>Utilisateur</TableHead>
                 <TableHead>Classe</TableHead>
+                <TableHead>Offre</TableHead>
                 <TableHead>Utilisés</TableHead>
                 <TableHead>Restants</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -140,7 +169,8 @@ function AdminPage() {
             <TableBody>
               {list.map((u) => {
                 const bonus = Number(u.bonus);
-                const left = DAILY_CREDITS + bonus - Number(u.used);
+                const base = u.pro === "active" ? PRO_DAILY_CREDITS : DAILY_CREDITS;
+                const left = base + bonus - Number(u.used);
                 return (
                   <TableRow key={u.id}>
                     <TableCell>
@@ -148,9 +178,19 @@ function AdminPage() {
                       <div className="text-xs text-muted-foreground">{u.email}</div>
                     </TableCell>
                     <TableCell>{u.grade || "—"}</TableCell>
+                    <TableCell>
+                      {u.pro === "active" ? (
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">PRO</span>
+                          <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setPro(u.id, false)}>Désactiver</Button>
+                        </div>
+                      ) : (
+                        <Button size="sm" variant="ghost" onClick={() => setPro(u.id, true)}>Activer Pro</Button>
+                      )}
+                    </TableCell>
                     <TableCell>{formatCredits(Number(u.used))}</TableCell>
                     <TableCell className="font-semibold">
-                      {formatCredits(left)} / {formatCredits(DAILY_CREDITS + bonus)}
+                      {formatCredits(left)} / {formatCredits(base + bonus)}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap justify-end gap-1.5">
@@ -168,7 +208,7 @@ function AdminPage() {
               })}
             </TableBody>
           </Table>
-          <p className="mt-3 text-xs text-muted-foreground">Chaque élève a 10 crédits par jour (message écrit : 1, vocal : 0,25). Les boutons +10 / +5 / +1 ajoutent des crédits et −1 / −5 / −10 en enlèvent pour la journée en cours (au minimum 0 crédit) ; ↺ remet le compteur à zéro.</p>
+          <p className="mt-3 text-xs text-muted-foreground">Chaque élève a 10 crédits par jour, 30 en Pro (message écrit : 1, vocal : 0,5, photo : 0,5 ou 0,75). Les boutons +10 / +5 / +1 ajoutent des crédits et −1 / −5 / −10 en enlèvent pour la journée en cours (au minimum 0 crédit) ; ↺ remet le compteur à zéro.</p>
         </section>
       </div>
     </div>
