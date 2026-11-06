@@ -1,7 +1,8 @@
-export type Mode = "expliquer" | "generer" | "reviser" | "organiser";
+export type Mode = "expliquer" | "generer" | "reviser" | "organiser" | "corriger";
 
 export const MODES: { value: Mode; label: string; hint: string }[] = [
   { value: "expliquer", label: "Expliquer", hint: "Comprendre un devoir, une erreur, une méthode" },
+  { value: "corriger", label: "Corriger", hint: "Vérifier tes réponses et comprendre tes erreurs" },
   { value: "generer", label: "Générer", hint: "Quiz, flashcards, exercices" },
   { value: "reviser", label: "Réviser", hint: "Préparer une éval ou un contrôle" },
   { value: "organiser", label: "Organiser", hint: "Classer tes devoirs et estimer le temps" },
@@ -27,6 +28,8 @@ export type PromptProfile = {
 };
 
 const MODE_RULES: Record<Mode, string> = {
+  corriger:
+    "MODE CORRIGER : demande l'énoncé et la tentative de l'élève s'ils manquent. Vérifie son raisonnement et ses réponses, y compris dans une image jointe. Indique ce qui est juste et repère les erreurs en expliquant pourquoi. Pour une réponse fausse, donne un indice ou une question guidée pour que l'élève se corrige lui-même, sans révéler la bonne réponse ni réécrire son devoir. Si tout est juste, confirme-le et valorise sa démarche.",
   expliquer:
     "MODE EXPLIQUER : explique la notion, l'erreur ou la méthode étape par étape avec un exemple DIFFÉRENT de l'exercice de l'élève. Termine par une question qui pousse l'élève à faire la prochaine étape lui-même.",
   generer:

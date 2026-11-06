@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSystemPrompt, type PromptProfile } from "@/lib/prompt";
+import { buildSystemPrompt, isMode, MODES, type PromptProfile } from "@/lib/prompt";
 
 const base: PromptProfile = {
   nickname: "Sam", first_name: "Samuel", grade: "4e", age: 13, tone: "cool", use_emojis: true,
@@ -8,9 +8,18 @@ const base: PromptProfile = {
 
 describe("buildSystemPrompt", () => {
   it("always forbids giving the answer, in every mode", () => {
-    for (const m of ["expliquer", "generer", "reviser", "organiser"] as const) {
+    for (const { value: m } of MODES) {
       expect(buildSystemPrompt(base, m)).toContain("tu ne donnes JAMAIS la réponse");
     }
+  });
+  it("accepts corriger as a supported mode", () => {
+    expect(isMode("corriger")).toBe(true);
+    expect(isMode("correction-inconnue")).toBe(false);
+  });
+  it("guides correction without revealing the correct answer", () => {
+    const prompt = buildSystemPrompt(base, "corriger");
+    expect(prompt).toContain("demande l'énoncé et la tentative de l'élève s'ils manquent");
+    expect(prompt).toContain("sans révéler la bonne réponse ni réécrire son devoir");
   });
   it("uses the chosen nickname, grade and age", () => {
     const s = buildSystemPrompt(base, "expliquer");
