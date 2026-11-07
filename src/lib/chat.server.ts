@@ -32,7 +32,7 @@ export async function handleChat(request: Request) {
 
   if (isProMode(mode)) {
     const { data: pro } = await supabase.rpc("is_pro", { _user: userId });
-    if (!pro) return json(403, "Le mode Corriger est réservé aux membres Pro. Passe à Pro sur la page Offres ✨");
+    if (!pro) return json(403, "Ce mode est réservé aux membres Pro. Passe à Pro sur la page Offres ✨");
   }
 
   const { data: thread } = await supabase.from("threads").select("id,title").eq("id", body.threadId).maybeSingle();

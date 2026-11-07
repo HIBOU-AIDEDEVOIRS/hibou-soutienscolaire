@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSystemPrompt, isMode, MODES, type PromptProfile } from "@/lib/prompt";
+import { buildSystemPrompt, isMode, isProMode, MODES, type PromptProfile } from "@/lib/prompt";
 
 const base: PromptProfile = {
   nickname: "Sam", first_name: "Samuel", grade: "4e", age: 13, tone: "cool", use_emojis: true,
@@ -20,6 +20,11 @@ describe("buildSystemPrompt", () => {
     const prompt = buildSystemPrompt(base, "corriger");
     expect(prompt).toContain("demande l'énoncé et la tentative de l'élève s'ils manquent");
     expect(prompt).toContain("sans révéler la bonne réponse ni réécrire son devoir");
+  });
+  it("makes Rechercher and Corriger Pro, keeps Générer free", () => {
+    expect(isProMode("rechercher")).toBe(true);
+    expect(isProMode("corriger")).toBe(true);
+    expect(isProMode("generer")).toBe(false);
   });
   it("uses the chosen nickname, grade and age", () => {
     const s = buildSystemPrompt(base, "expliquer");

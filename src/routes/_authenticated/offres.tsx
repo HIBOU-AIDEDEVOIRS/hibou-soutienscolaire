@@ -43,7 +43,7 @@ function OffresPage() {
           <ArrowLeft className="h-4 w-4" /> Retour aux discussions
         </Link>
         <h1 className="font-display text-3xl font-extrabold">Choisis ton offre</h1>
-        <p className="mt-2 text-muted-foreground">Plus de crédits et le mode Corriger pour vérifier tes réponses.</p>
+        <p className="mt-2 text-muted-foreground">Plus de crédits, et les modes Corriger et Rechercher.</p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl border bg-card p-6">
@@ -63,6 +63,7 @@ function OffresPage() {
             <ul className="mt-5 space-y-2 text-sm">
               <Item>{PRO_DAILY_CREDITS} crédits par jour</Item>
               <Item>Mode Corriger : Hibou vérifie tes réponses</Item>
+              <Item>Mode Rechercher : prépare tes exposés</Item>
               <Item>Tout ce qu'il y a dans Gratuit</Item>
             </ul>
             <div className="mt-6">
