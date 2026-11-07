@@ -121,6 +121,24 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_trials: {
+        Row: {
+          ends_at: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          ends_at: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          ends_at?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
@@ -302,6 +320,7 @@ export type Database = {
       paris_today: { Args: never; Returns: string }
       request_pro: { Args: never; Returns: undefined }
       request_pro_plan: { Args: { _plan: string }; Returns: undefined }
+      start_pro_trial: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"
