@@ -92,7 +92,7 @@ function OffresPage() {
             </ul>
             <div className="mt-6">
               {status === "active" ? (
-                <p className="font-semibold text-success">Tu es Pro ✨</p>
+                <p className="font-semibold text-success">Tu es Pro ✨{trial?.used && trial.daysLeft > 0 ? ` (essai gratuit : ${trial.daysLeft} jour${trial.daysLeft > 1 ? "s" : ""} restant${trial.daysLeft > 1 ? "s" : ""})` : ""}</p>
               ) : status === "pending" ? (
                 <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground"><Clock className="h-4 w-4" /> Demande envoyée, en attente de validation</p>
               ) : (
