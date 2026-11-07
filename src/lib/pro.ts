@@ -11,8 +11,10 @@ export const proQuery = queryOptions({
   queryFn: async (): Promise<ProStatus> => {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return "none";
+    const { data: isPro } = await supabase.rpc("is_pro", { _user: u.user.id });
+    if (isPro) return "active";
     const { data } = await supabase.from("pro_subscriptions").select("status").eq("user_id", u.user.id).maybeSingle();
-    return (data?.status as ProStatus) ?? "none";
+    return data?.status === "pending" ? "pending" : "none";
   },
 });
 
