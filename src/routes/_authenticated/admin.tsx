@@ -33,7 +33,7 @@ function AdminPage() {
   const users = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("admin_list_users2");
+      const { data, error } = await supabase.rpc("admin_list_users3");
       if (error) throw error;
       return data;
     },
@@ -140,6 +140,7 @@ function AdminPage() {
                 <div>
                   <div className="font-medium">{u.name || "—"}</div>
                   <div className="text-xs text-muted-foreground">{u.email}</div>
+                  <div className="mt-1 text-xs font-semibold">Formule : {u.plan === "annuel" ? "Annuel (10 €/an)" : "Mensuel (1 €/mois)"}</div>
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={() => setPro(u.id, true)}>Accepter</Button>
@@ -182,6 +183,7 @@ function AdminPage() {
                       {u.pro === "active" ? (
                         <div className="flex items-center gap-2">
                           <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">PRO</span>
+                          <span className="text-xs text-muted-foreground">{u.plan === "annuel" ? "Annuel" : "Mensuel"}</span>
                           <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setPro(u.id, false)}>Désactiver</Button>
                         </div>
                       ) : (

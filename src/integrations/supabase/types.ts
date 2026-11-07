@@ -100,18 +100,21 @@ export type Database = {
       pro_subscriptions: {
         Row: {
           activated_at: string | null
+          plan: string
           requested_at: string
           status: string
           user_id: string
         }
         Insert: {
           activated_at?: string | null
+          plan?: string
           requested_at?: string
           status?: string
           user_id: string
         }
         Update: {
           activated_at?: string | null
+          plan?: string
           requested_at?: string
           status?: string
           user_id?: string
@@ -247,6 +250,20 @@ export type Database = {
           used: number
         }[]
       }
+      admin_list_users3: {
+        Args: never
+        Returns: {
+          bonus: number
+          created_at: string
+          email: string
+          grade: string
+          id: string
+          name: string
+          plan: string
+          pro: string
+          used: number
+        }[]
+      }
       admin_set_credits: {
         Args: { _bonus: number; _reset: boolean; _user: string }
         Returns: undefined
@@ -284,6 +301,7 @@ export type Database = {
       }
       paris_today: { Args: never; Returns: string }
       request_pro: { Args: never; Returns: undefined }
+      request_pro_plan: { Args: { _plan: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
