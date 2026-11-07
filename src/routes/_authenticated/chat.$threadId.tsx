@@ -204,7 +204,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
                 <PromptInputSelect value={mode} onValueChange={(v) => {
                   const m = MODES.find((x) => x.value === v);
                   if (m?.pro && !isPro) {
-                    toast("Le mode Corriger est réservé à Pro ✨", { action: { label: "Voir les offres", onClick: () => { window.location.href = "/offres"; } } });
+                    toast(`Le mode ${m.label} est réservé à Pro ✨`, { action: { label: "Voir les offres", onClick: () => { window.location.href = "/offres"; } } });
                     return;
                   }
                   setMode(v as Mode);

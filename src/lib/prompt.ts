@@ -1,4 +1,4 @@
-export type Mode = "expliquer" | "generer" | "reviser" | "organiser" | "corriger";
+export type Mode = "expliquer" | "generer" | "reviser" | "organiser" | "corriger" | "rechercher";
 
 export const MODES: { value: Mode; label: string; hint: string; pro?: boolean }[] = [
   { value: "expliquer", label: "Expliquer", hint: "Comprendre un devoir, une erreur, une méthode" },
@@ -6,6 +6,7 @@ export const MODES: { value: Mode; label: string; hint: string; pro?: boolean }[
   { value: "generer", label: "Générer", hint: "Quiz, flashcards, exercices" },
   { value: "reviser", label: "Réviser", hint: "Préparer une éval ou un contrôle" },
   { value: "organiser", label: "Organiser", hint: "Classer tes devoirs et estimer le temps" },
+  { value: "rechercher", label: "Rechercher", hint: "Préparer un exposé : sujet, sources, plan", pro: true },
 ];
 
 export function isProMode(m: Mode) {
@@ -32,6 +33,8 @@ export type PromptProfile = {
 };
 
 const MODE_RULES: Record<Mode, string> = {
+  rechercher:
+    "MODE RECHERCHER (exposés) : aide l'élève à préparer un exposé ou une recherche. Aide-le à cerner le sujet et formuler une problématique, propose des pistes et des mots-clés de recherche, explique comment reconnaître une source fiable (sites institutionnels, encyclopédies, musées, CDI) et comment citer ses sources. Donne des faits de contexte courts pour l'orienter, mais ne rédige JAMAIS l'exposé, le texte à dire ni le contenu des diapositives : aide-le à construire SON plan (intro, parties, conclusion) par des questions, puis relis et commente ce qu'il écrit.",
   corriger:
     "MODE CORRIGER : demande l'énoncé et la tentative de l'élève s'ils manquent. Vérifie son raisonnement et ses réponses, y compris dans une image jointe. Indique ce qui est juste et repère les erreurs en expliquant pourquoi. Pour une réponse fausse, donne un indice ou une question guidée pour que l'élève se corrige lui-même, sans révéler la bonne réponse ni réécrire son devoir. Si tout est juste, confirme-le et valorise sa démarche.",
   expliquer:
