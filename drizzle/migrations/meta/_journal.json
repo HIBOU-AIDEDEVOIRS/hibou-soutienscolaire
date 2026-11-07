@@ -36,6 +36,13 @@
       "when": 1793966335818,
       "tag": "0004_pro_subscription",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794050436192,
+      "tag": "0005_pro_plan",
+      "breakpoints": true
     }
   ]
 }
