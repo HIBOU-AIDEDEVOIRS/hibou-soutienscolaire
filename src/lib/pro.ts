@@ -15,3 +15,17 @@ export const proQuery = queryOptions({
     return (data?.status as ProStatus) ?? "none";
   },
 });
+
+export const trialQuery = queryOptions({
+  queryKey: ["pro-trial"],
+  queryFn: async (): Promise<{ used: boolean; endsAt: string | null; daysLeft: number }> => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return { used: false, endsAt: null, daysLeft: 0 };
+    const { data } = await supabase.from("pro_trials").select("ends_at").eq("user_id", u.user.id).maybeSingle();
+    if (!data) return { used: false, endsAt: null, daysLeft: 0 };
+    const ms = new Date(data.ends_at).getTime() - Date.now();
+    return { used: true, endsAt: data.ends_at, daysLeft: Math.max(0, Math.ceil(ms / 86400000)) };
+  },
+});
+
+export const PRO_EMAIL = "hibou.aideauxdevoirs@gmail.com";
